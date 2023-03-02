@@ -1,0 +1,56 @@
+version: '3'
+services:
+  app:
+    image: tangramor/nginx-php8-fpm
+    environment:
+        TZ: 'America/Tijuana'
+        WEBROOT: '/var/www/html/public'
+        PHP_REDIS_SESSION_HOST: 'redis'
+        CREATE_LARAVEL_STORAGE: '1'
+        COMPOSERMIRROR: 'https://mirrors.cloud.tencent.com/composer/'
+        NPMMIRROR: 'https://registry.npmmirror.com'
+    ports:
+        - '${APP_PORT:-80}:80'
+    extra_hosts:
+        - 'host.docker.internal:host-gateway'
+    volumes:
+        - '.:/var/www/html'
+    networks:
+        - backbone
+    depends_on:
+        - mysql
+        - redis
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    ports:
+        - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+        MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+        MYSQL_ROOT_HOST: "%"
+        MYSQL_DATABASE: '${DB_DATABASE}'
+        MYSQL_USER: '${DB_USERNAME}'
+        MYSQL_PASSWORD: '${DB_PASSWORD}'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+        - './docker/mysql:/var/lib/mysql'
+    networks:
+        - backbone
+    healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+        retries: 3
+        timeout: 5s
+  redis:
+    image: 'redis:alpine'
+    ports:
+        - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+        - './docker/redis:/data'
+    networks:
+        - backbone
+    healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        retries: 3
+        timeout: 5s
+networks:
+    backbone:
+        driver: bridge
