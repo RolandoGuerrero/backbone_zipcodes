@@ -1,66 +1,46 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Reto Backbone Zipcodes
+### Definición del problema
+Importar base de datos de los códigos postales de México otorgada por el SERVICIO POSTAL MEXICANO y habilitar un endpoint para obtener la información específica de un código postal.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Resolución
+Se revisó la estructura de los datos y se hizo un diagrama de base datos para la generación de modelos, en el cual resultaron los siguientes:
 
-## About Laravel
+- `FederalEntity`
+- `Municipality` (Relacionada a `FederalEntity`)
+- `ZipCode` (Relacionada a `FederalEntity`, Relacionada a `Municipality`)
+- `SettlementType` 
+- `Settlements`  (Relacionada a `ZipCode`, Relacionada a `SettlementType`)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Se descargó el archivo con los datos de los códigos postales y posteriormente fue guardado por múltiples archivos csv, estos archivos csv fueron agregados al proyecto para ser leídos por un seeder (`ZipcodeCsvSeeder`), el seeder hace una iteración por todos los archivos csv hace uso de una clase `CsvImporter` para hacer la importación de datos de casa archivo.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### CsvImporter Class
+Se creó una clase `CsvImporter` padre siguiendo las convenciones de Strategy Pattern que laravel ya aplica un muchos de sus características y se creó el adaptador `PostalMXCsvImporter` este adaptador hace el proceso específico de un csv con los headers presentados por el SERVICIO POSTAL MEXICANO, después del procesamiento se guarda en la base de datos la información. 
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Si en un futuro se quisiera hacer uso de otro tipo de csv con header diferentes solo se debería crear un nuevo adapter que funcione con este csv, permitiendo así que la clase `CsvImporter` crezca sin que suponga un cambio en el funcionamiento original.
 
-## Learning Laravel
+### Endpoint
+Se dio de alta el endpoint `/api/zip-codes/{zipcode}` el cual es trabajo por el controlador `GetZipcodeController`, este controlador hace el llamado a un clase de acción llamada `GetZipCode` para obtener la información del código postal junto con sus relaciones.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### GetZipCode Action Class
+Esta clase sigue la convenciones de Action Pattern presentado por laravel en los últimos años, la idea es abstraer la lógica de negocios a una clase única la cual procesa el request y responde según sea el caso. En el caso de esta clase hace la búsqueda del código postal dado como parámetro primero revisa si ese código postal ha sido guardado en cache de ser encontrado  lo retorna si no procede a buscar en la base de datos y crea un registro en caché con la información y regresa retorna, en caso de que el código postal ingresado no exista lanzará una excepción `ModelNotFoundException`. El uso de este patrón de diseño nos permite que al estar la lógica de negocios abstraída a una sola clase pueda ser llamada por varios puntos de entrada en nuestro caso fue un controlador, pero se puede hacer los mismo para un job, un comando, etc.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Sobre el uso del caché opte por la implementación ya que son registros que no son editados muy seguido y da la oportunidad de hacer uso de esta herramienta para bajar la latencia en la respuesta de la acción.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Pruebas.
+Se crearon pruebas unitarias para cada clase aplicada en el proyecto en nuestro caso para el controlador, la acción y el importador. Cada test validó el funcionamiento de forma correcta tanto en los escenarios donde el resultado es válido como los escenarios donde la respuesta es un error o una excepción.
 
-## Laravel Sponsors
+#### Prueba local.
+Para hacer una prueba local basta con:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Hacer clon del proyecto:
+```sh
+git clone git@github.com:RolandoGuerrero/backbone_zipcodes.git
+```
+Posteriormente correr:
+```sh
+docker-compose up
+```
+Finalmente correr:
+```sh
+docker compose exec app php artisan test
+```
