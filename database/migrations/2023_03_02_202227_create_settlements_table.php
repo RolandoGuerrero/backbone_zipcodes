@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('settlements', function (Blueprint $table) {
             $table->uuid('id');
-            $table->integer('key');
+            $table->integer('key')->unique();
             $table->string('name');
             $table->string('zone_type');
             $table->timestamps();
             $table->softDeletes();
             $table->foreignUuid('settlement_type_id');
+            $table->foreignUuid('zip_code_id');
         });
     }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('federal_entities', function (Blueprint $table) {
             $table->uuid('id');
             $table->string('name');
-            $table->integer('key');
+            $table->integer('key')->unique();
             $table->string('code')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -5,7 +5,6 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\File;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,10 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $files = File::allFiles(storage_path('seeders'));
-
-        foreach($files as $file){           
-            
-        }
+        $this->call(
+            ZipcodeCsvSeeder::class
+        );
     }
 }

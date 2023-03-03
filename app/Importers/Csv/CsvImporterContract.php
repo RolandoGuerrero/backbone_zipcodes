@@ -1,5 +1,5 @@
 <?php
-namespace App\Actions\ZipCode\Contracts;
+namespace App\Importers\Csv;
 
 interface CsvImporterContract {
     
@@ -9,5 +9,5 @@ interface CsvImporterContract {
 
     public function convertData(string $path) :  array;
 
-    public function validateHeaders(string $path) :  bool;
+    public function validateHeaders(array $headers) :  bool;
 }
