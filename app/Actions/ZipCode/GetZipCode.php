@@ -15,11 +15,11 @@ class GetZipCode{
      */
     public function run(string $zipCode) : ZipCode
     {
-        $cachedZipcode = Cache::get($zipCode);
+        // $cachedZipcode = Cache::get($zipCode);
 
-        if($cachedZipcode){
-            return $cachedZipcode;
-        }
+        // if($cachedZipcode){
+        //     return $cachedZipcode;
+        // }
 
         $zipCode = ZipCode::where('zip_code', $zipCode)
         ->with('federalEntity', 'municipality', 'settlements.settlementType')

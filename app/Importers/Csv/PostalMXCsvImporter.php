@@ -101,7 +101,7 @@ final class PostalMXCsvImporter extends CsvImporter{
         $zipCode = ZipCode::firstOrCreate(
             ['zip_code' => $data['d_codigo']],
             [
-                'locality' => Str::upper($data['d_ciudad']),
+                'locality' =>  $data['d_ciudad'] !== '' ? Str::upper($data['d_ciudad']) : null,
                 'federal_entity_id' => $federalEntity->id,
                 'municipality_id' => $municipality->id,
             ]
