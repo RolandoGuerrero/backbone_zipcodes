@@ -1,2 +1,3 @@
 *
+!create-testing-database.sh
 !.gitignore

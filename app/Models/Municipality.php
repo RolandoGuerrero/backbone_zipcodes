@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use App\Models\Traits\CleanString;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Municipality extends Model
 {
@@ -20,6 +21,7 @@ class Municipality extends Model
     protected $fillable = [
         'name',
         'key',
+        'federal_entity_id'
     ];
 
     /**
@@ -32,6 +34,16 @@ class Municipality extends Model
         return [
             'name'
         ];
+    }
+
+    /**
+     * Get the federalEntity that owns the Municipality
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function federalEntity(): BelongsTo
+    {
+        return $this->belongsTo(FederalEntity::class);
     }
 
 }
