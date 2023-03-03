@@ -53,6 +53,11 @@ final class PostalMXCsvImporter extends CsvImporter{
         }
 
         $this->processData($result['data']);
+
+        return [
+            'success' => true,
+            'errors' => $this->errors
+        ];
     }
 
     /**
