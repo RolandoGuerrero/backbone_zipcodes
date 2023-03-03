@@ -32,7 +32,7 @@ class GetZipCode{
         Cache::put(
             $zipCode->zip_code, 
             $zipCode,
-            now()->addMinutes(15)
+            now()->addDay()
         );
 
         return $zipCode;
