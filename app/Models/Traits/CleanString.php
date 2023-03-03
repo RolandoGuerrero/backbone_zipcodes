@@ -14,10 +14,7 @@ trait CleanString{
     {
         static::creating(function ($model) {
             foreach ($model->cleanable() as $attribute) {
-                if(is_numeric($model->{$attribute}) || is_null($model->{$attribute})) {
-                    dd($model->{$attribute});
-                    continue;
-                }
+                if(is_numeric($model->{$attribute}) || is_null($model->{$attribute})) continue;
 
                 $model->setAttribute(
                     $attribute, 
