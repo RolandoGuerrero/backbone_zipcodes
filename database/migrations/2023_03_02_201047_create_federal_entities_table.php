@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('federal_entities', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary();
             $table->string('name');
-            $table->integer('key')->unique();
+            $table->integer('key');
             $table->string('code')->nullable();
             $table->timestamps();
             $table->softDeletes();

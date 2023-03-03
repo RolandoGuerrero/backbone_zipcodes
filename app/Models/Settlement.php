@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\CleanString;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Settlement extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes, CleanString;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +25,20 @@ class Settlement extends Model
         'settlement_type_id',
         'zip_code_id'
     ];
+
+    /**
+     * attributes to clean
+     *
+     * @return array
+     */
+    public function cleanable() : array
+    {
+        return [
+            'name',
+            'zone_type'
+        ];
+    }
+
 
 
     /**

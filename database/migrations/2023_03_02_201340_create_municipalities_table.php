@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('municipalities', function (Blueprint $table) {
-            $table->uuid('id');
+            $table->uuid('id')->primary();
             $table->string('name');
-            $table->integer('key')->unique();
+            $table->integer('key');
             $table->timestamps();
             $table->softDeletes();
+            $table->foreignUuid('federal_entity_id');
         });
     }
 

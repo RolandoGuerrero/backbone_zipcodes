@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('settlements', function (Blueprint $table) {
-            $table->uuid('id');
-            $table->integer('key')->unique();
+            $table->uuid('id')->primary();
+            $table->integer('key');
             $table->string('name');
             $table->string('zone_type');
             $table->timestamps();

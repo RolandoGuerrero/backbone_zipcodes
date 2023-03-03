@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\CleanString;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ZipCode extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes, CleanString;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +25,18 @@ class ZipCode extends Model
         'federal_entity_id',
         'municipality_id',
     ];
+
+    /**
+     * attributes to clean
+     *
+     * @return array
+     */
+    public function cleanable() : array
+    {
+        return [
+            'locality'
+        ];
+    }
 
     /**
      * Get the federalEntity that owns the ZipCode
@@ -53,5 +66,15 @@ class ZipCode extends Model
     public function settlements(): HasMany
     {
         return $this->hasMany(Settlement::class);
+    }
+
+    /**
+     * Key for route binding
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'zip_code';
     }
 }

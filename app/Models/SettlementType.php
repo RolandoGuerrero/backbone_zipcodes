@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\CleanString;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SettlementType extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes, CleanString;
 
     /**
      * The attributes that are mass assignable.
@@ -19,4 +20,17 @@ class SettlementType extends Model
     protected $fillable = [
         'name',
     ];
+
+    /**
+     * attributes to clean
+     *
+     * @return array
+     */
+    public function cleanable() : array
+    {
+        return [
+            'name'
+        ];
+    }
+
 }

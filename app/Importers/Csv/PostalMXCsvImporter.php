@@ -68,6 +68,12 @@ final class PostalMXCsvImporter extends CsvImporter{
         }
     }
 
+    /**
+     * Save the data
+     *
+     * @param array $data
+     * @return void
+     */
     public function saveData(array $data)
     {
         $federalEntity = FederalEntity::firstOrCreate(
@@ -78,7 +84,10 @@ final class PostalMXCsvImporter extends CsvImporter{
         );
 
         $municipality = Municipality::firstOrCreate(
-            ['key' => $data['c_estado']],
+            [
+                'key' => $data['c_mnpio'],
+                'federal_entity_id' => $federalEntity->id
+            ],
             [
                 'name' => Str::upper($data['D_mnpio']),
             ]
@@ -99,13 +108,15 @@ final class PostalMXCsvImporter extends CsvImporter{
             []
         );
 
-        $settlement = Settlement::firstOrCreate(
-            ['key' => $data['id_asenta_cpcons']],
+        Settlement::firstOrCreate(
+            [
+                'key' => $data['id_asenta_cpcons'],
+                'zip_code_id' => $zipCode->id,
+            ],
             [
                 'name' =>  Str::upper($data['d_asenta']),
                 'zone_type' => Str::upper($data['d_zona']),
-                'settlement_type_id' => $settlementType->id,
-                'zip_code_id' => $zipCode->id,
+                'settlement_type_id' => $settlementType->id
             ]
         );
     }
